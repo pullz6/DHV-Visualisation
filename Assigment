@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
 from matplotlib import cm
+plt.style.use('seaborn-whitegrid')
 
 def calculate_srd_per_year(df,year): 
     df = df.loc[df_salaries['Working_Year']==year]
@@ -125,12 +126,30 @@ plt.show()
 
 #Scatter plot 
 plt.figure()
-plt.scatter(df_2020['Salary_In_pounds'],df_2020['Experience'],c=df_2020_num['Designation_num'])
+plt.scatter(df_2020['Salary_In_pounds'],df_2020['Experience'],c=df_2020_num['Designation_num'],marker="d")
 plt.scatter(df_2021['Salary_In_pounds'],df_2021['Experience'],c=df_2021_num['Designation_num'])
 plt.scatter(df_2022['Salary_In_pounds'],df_2022['Experience'],c=df_2022_num['Designation_num'])
 plt.legend(loc='upper right')
 plt.show()
 
+#Scatter plot
+plt.figure()
+groups = df_2020.groupby('Designation')
+for name, group in groups:
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+plt.legend()
+
+plt.figure()
+groups = df_2021.groupby('Designation')
+for name, group in groups:
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+plt.legend()
+
+plt.figure()
+groups = df_2022.groupby('Designation')
+for name, group in groups:
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+plt.legend()
 
 #Heating map 
 df_ds = df_2020_num[df_2020_num['Designation_num']==0]
@@ -189,4 +208,5 @@ plt.legend(loc=(-0.1, 0))
 plt.show()
 
     
-   
+    
+
