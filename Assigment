@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
-from matplotlib import cm
 plt.style.use('seaborn-whitegrid')
 
 def calculate_srd_per_year(df,year): 
@@ -97,27 +96,26 @@ df_salaries_num['Employee_Location'].replace(['US','GB','CA','DE'],[0,1,2,3], in
 df_select_copy.pivot_table(index='Designation', columns='Company_Size', aggfunc={'Salary_In_pounds':np.mean}).plot.barh(title='Mean Salary for Selected Jobs for Company Size',subplots=True)
 
 
-df_countries = df_selected.loc[df_selected['Employee_Location'].isin(['US','GB','CA','DE'])]
-df_salaries_num = df_salaries_num[df_salaries_num['Employee_Location'].isin([0,1,2,3])]
+# df_countries = df_selected.loc[df_selected['Employee_Location'].isin(['US','GB','CA','DE'])]
+# df_salaries_num = df_salaries_num[df_salaries_num['Employee_Location'].isin([0,1,2,3])]
 
 #Calculating the mean for positions for the year 
-df_2020 = df_countries.loc[df_countries['Working_Year']==2020]
+df_2020 = df_selected.loc[df_selected['Working_Year']==2020]
 df_2020_num = df_salaries_num.loc[df_salaries_num['Working_Year']==2020]
 mean= df_2020['Salary_In_pounds'].mean()
 df_2020['std_salary'] = df_2020.apply(lambda row : row[10]-mean, axis=1)
 
-df_2021 = df_countries.loc[df_countries['Working_Year']==2021]
+df_2021 = df_selected.loc[df_selected['Working_Year']==2021]
 df_2021_num = df_salaries_num.loc[df_salaries_num['Working_Year']==2021]
 mean= df_2021['Salary_In_pounds'].mean()
 df_2021['std_salary'] = df_2021.apply(lambda row : row[10]-mean, axis=1)
 
-df_2022 = df_countries.loc[df_countries['Working_Year']==2022]
+df_2022 = df_selected.loc[df_selected['Working_Year']==2022]
 df_2022_num = df_salaries_num.loc[df_salaries_num['Working_Year']==2022]
 mean= df_2022['Salary_In_pounds'].mean()
 df_2022['std_salary'] = df_2022.apply(lambda row : row[10]-mean, axis=1)
 
 plt.figure()
-
 plt.hist(df_2020['Salary_In_pounds'], 25, alpha=0.5, label='2020',histtype='stepfilled')
 plt.hist(df_2021['Salary_In_pounds'], 25, alpha=0.5, label='2021',histtype='stepfilled')
 plt.hist(df_2022['Salary_In_pounds'], 25, alpha=0.5, label='2022',histtype='stepfilled')
@@ -132,23 +130,46 @@ plt.scatter(df_2022['Salary_In_pounds'],df_2022['Experience'],c=df_2022_num['Des
 plt.legend(loc='upper right')
 plt.show()
 
+#Mean over the year 
+df_line_data = pd.DataFrame()
+cols_list = ['Designation','2020','2021','2022']
+df_line_data['Designation'] = ['Data Analyst','Data Engineer','Data Scientist']
+df_list = [df_2020,df_2021,df_2022]
+i = 0 
+while i<3: 
+    temp_groups = df_list[i].groupby('Designation')
+    for name, group in temp_groups: 
+       mean = df_list[i]['Salary_In_pounds'].mean()
+       
+    i = i +1
+
+
 #Scatter plot
 plt.figure()
 groups = df_2020.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
+plt.xlabel('Salary in Pounds per year')
+plt.ylabel('Experience Level')
+plt.title('Salary for selected positions for 2020')
 plt.legend()
 
 plt.figure()
 groups = df_2021.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
+plt.xlabel('Salary in Pounds per year')
+plt.ylabel('Experience Level')
+plt.title('Salary for selected positions for 2021')
 plt.legend()
 
 plt.figure()
 groups = df_2022.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name)
+    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
+plt.xlabel('Salary in Pounds per year')
+plt.ylabel('Experience Level')
+plt.title('Salary for selected positions for 2022')
 plt.legend()
 
 #Heating map 
@@ -181,9 +202,7 @@ df_pie_data = pd.DataFrame()
 df_pie_data = pie_data(df_2020,df_2021,df_2022)
 outer = df_pie_data.groupby('Year').sum()
 inner = df_pie_data.groupby(['Year','Designation']).sum()
-print(inner)
 inner_labels = inner.index.get_level_values(1)
-print(inner_labels)
 fig, ax = plt.subplots(figsize=(24,12))
 size = 0.3
 
@@ -208,5 +227,4 @@ plt.legend(loc=(-0.1, 0))
 plt.show()
 
     
-    
-
+   
