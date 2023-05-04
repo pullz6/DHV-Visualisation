@@ -25,30 +25,45 @@ def calculate_srd_(df):
 
 def pie_data(df_2020,df_2021,df_2022):
     df_pie_data = pd.DataFrame()
-    list = []
+    list_temp = []
     value= np.sum(df_2020["Designation"].isin(['Data Scientist']))
-    list.append([2020,'Data Scientist',value])
+    list_temp.append([2020,'Data Scientist',value])
     value= np.sum(df_2020["Designation"].isin(['Data Analyst']))
-    list.append([2020,'Data Analyst',value])
+    list_temp.append([2020,'Data Analyst',value])
     value= np.sum(df_2020["Designation"].isin(['Data Engineer']))
-    list.append([2020,'Data Engineer',value])
+    list_temp.append([2020,'Data Engineer',value])
     
     value= np.sum(df_2021["Designation"].isin(['Data Scientist']))
-    list.append([2021,'Data Scientist',value])
+    list_temp.append([2021,'Data Scientist',value])
     value= np.sum(df_2021["Designation"].isin(['Data Analyst']))
-    list.append([2021,'Data Analyst',value])
+    list_temp.append([2021,'Data Analyst',value])
     value= np.sum(df_2021["Designation"].isin(['Data Engineer']))
-    list.append([2021,'Data Engineer',value])
+    list_temp.append([2021,'Data Engineer',value])
     
     value= np.sum(df_2022["Designation"].isin(['Data Scientist']))
-    list.append([2022,'Data Scientist',value])
+    list_temp.append([2022,'Data Scientist',value])
     value= np.sum(df_2022["Designation"].isin(['Data Analyst']))
-    list.append([2022,'Data Analyst',value])
+    list_temp.append([2022,'Data Analyst',value])
     value= np.sum(df_2020["Designation"].isin(['Data Engineer']))
-    list.append([2022,'Data Engineer',value])
+    list_temp.append([2022,'Data Engineer',value])
     
-    df_pie_data = pd.DataFrame(list, columns=['Year', 'Designation','Number'])
+    df_pie_data = pd.DataFrame(list_temp, columns=['Year', 'Designation','Number'])
     return df_pie_data
+#Setting up the grid 
+
+fig = plt.figure()
+fig3 = plt.figure(constrained_layout=True)
+gs = fig3.add_gridspec(3, 3)
+f3_ax1 = fig3.add_subplot(gs[0, :])
+f3_ax1.set_title('gs[0, :]')
+f3_ax2 = fig3.add_subplot(gs[1, :-1])
+f3_ax2.set_title('gs[1, :-1]')
+f3_ax3 = fig3.add_subplot(gs[1:, -1])
+f3_ax3.set_title('gs[1:, -1]')
+f3_ax4 = fig3.add_subplot(gs[-1, 0])
+f3_ax4.set_title('gs[-1, 0]')
+f3_ax5 = fig3.add_subplot(gs[-1, -2])
+f3_ax5.set_title('gs[-1, -2]')
 
 df_salaries = pd.read_csv('Data_Science_Fields_Salary_Categorization.csv', index_col=0)
 
@@ -75,7 +90,7 @@ df_salaries_num['Experience_num'] = df_selected['Experience']
 df_salaries_num['Experience_num'].replace(['EN', 'MI','SE','EX'],[0,1,2,3], inplace=True)
 
 df_salaries_num['Employment_Status_num'] = df_selected['Employment_Status']
-df_salaries_num['Employment_Status_num'].replace(['FT', 'PT'],[0,1], inplace=True)
+df_salaries_num['Employment_Status_num'].replace(['FT', 'PT'],[1,0], inplace=True)
 
 df_salaries_num['Company_Size_num'] = df_selected['Company_Size']
 df_salaries_num['Company_Size_num'].replace(['S','M','L'],[0,1,2], inplace=True)
@@ -93,7 +108,7 @@ df_salaries_num['Employee_Location'].replace(['US','GB','CA','DE'],[0,1,2,3], in
 
 
 #Plotting a graph to see the mean pf the salaries of each of these selected jobs per Large, Medium and Small company 
-df_select_copy.pivot_table(index='Designation', columns='Company_Size', aggfunc={'Salary_In_pounds':np.mean}).plot.barh(title='Mean Salary for Selected Jobs for Company Size',subplots=True)
+ax0=df_select_copy.pivot_table(index='Designation', columns='Company_Size', aggfunc={'Salary_In_pounds':np.mean}).plot.barh(title='Mean Salary for Selected Jobs for Company Size',subplots=True)
 
 
 # df_countries = df_selected.loc[df_selected['Employee_Location'].isin(['US','GB','CA','DE'])]
@@ -132,17 +147,43 @@ plt.show()
 
 #Mean over the year 
 df_line_data = pd.DataFrame()
-cols_list = ['Designation','2020','2021','2022']
+cols_list = ['Designation',2020,2021,2022]
 df_line_data['Designation'] = ['Data Analyst','Data Engineer','Data Scientist']
 df_list = [df_2020,df_2021,df_2022]
 i = 0 
+mean_2020 = []
+mean_2021 = []
+mean_2022 = []
+temp_list = [mean_2020,mean_2021,mean_2022]
 while i<3: 
     temp_groups = df_list[i].groupby('Designation')
     for name, group in temp_groups: 
-       mean = df_list[i]['Salary_In_pounds'].mean()
-       
+        mean = group['Salary_In_pounds'].mean()
+        temp_list[i].append(mean)
     i = i +1
 
+df_line_data['2020'] = mean_2020
+df_line_data['2021'] = mean_2021
+df_line_data['2022'] = mean_2022
+print(df_line_data)
+df_line_data_t = df_line_data.reset_index().set_index('Designation')
+df_line_data_t = df_line_data_t.drop('index',axis='columns')
+df_line_data_t = df_line_data_t.T
+
+print(df_line_data_t)
+plt.figure(figsize=(5,5))
+plt.plot(df_line_data_t.index,df_line_data_t['Data Analyst'] , '-ok',label ='Data Scientist',linewidth=4)
+plt.plot(df_line_data_t.index,df_line_data_t ['Data Engineer'] , '--o', color='pink',
+         markersize=5, linewidth=4, label ='Data Engineer',
+         markerfacecolor='white',
+         markeredgecolor='red',
+         markeredgewidth=1)
+plt.plot(df_line_data_t.index,df_line_data_t['Data Scientist'], '-p', color='gray', markersize=15, linewidth=4,
+         markerfacecolor='white',
+         markeredgecolor='gray',
+         markeredgewidth=2,label ='Data Scientist')
+plt.legend()
+plt.show()
 
 #Scatter plot
 plt.figure()
@@ -177,12 +218,12 @@ df_ds = df_2020_num[df_2020_num['Designation_num']==0]
 df_ds=df_ds.reset_index()
 df_ds=df_ds.drop(["Working_Year"], axis=1)
 df_ds=df_ds.drop(["Designation_num"], axis=1)
-pear_corr=df_ds.corr(method='spearman')
+pear_corr=df_ds.corr(method='pearson')
 
 
 fig, ax = plt.subplots(figsize=(10,10))
-im = ax.imshow(pear_corr, interpolation='nearest')
-fig.colorbar(im, orientation='vertical', fraction = 0.05)
+im = ax.imshow(pear_corr, interpolation='nearest', cmap='RdBu')
+fig.colorbar(im, orientation='vertical', fraction = 0.05, extend='both')
 
 # Show all ticks and label them with the dataframe column name
 ax.set_xticklabels(df_ds.columns, rotation=65, fontsize=15)
@@ -196,14 +237,15 @@ for i in range(len(df_ds.columns)-1):
 
 plt.show()
 
-#Getting the data for our piechart 
+#Getting the data for our piechart
+ 
 
 df_pie_data = pd.DataFrame() 
 df_pie_data = pie_data(df_2020,df_2021,df_2022)
 outer = df_pie_data.groupby('Year').sum()
 inner = df_pie_data.groupby(['Year','Designation']).sum()
 inner_labels = inner.index.get_level_values(1)
-fig, ax = plt.subplots(figsize=(24,12))
+fig, ax = plt.subplots(figsize=(8,7))
 size = 0.3
 
 cmap = plt.colormaps["Paired"]
@@ -227,4 +269,5 @@ plt.legend(loc=(-0.1, 0))
 plt.show()
 
     
-   
+    
+
