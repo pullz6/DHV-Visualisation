@@ -103,12 +103,13 @@ df_salaries_num['Employee_Location'].replace(['US','GB','CA','DE'],[0,1,2,3], in
 
 
 plt.figure(figsize = (15, 12))
-grid = plt.GridSpec(3, 4, wspace =0.3, hspace = 0.3)
+grid = plt.GridSpec(4, 4, wspace =0.3, hspace = 0.3)
 line = plt.subplot(grid[0, :2])
 scatter1 = plt.subplot(grid[0, 2:])
 pie_plot = plt.subplot(grid[1:, :2])
 scatter2=plt.subplot(grid[1, 2:])
 scatter3 = plt.subplot(grid[2, 2:])
+desc = plt.subplot(grid[3, 2:])
 
 #Calculating the mean for positions for the year 
 df_2020 = df_selected.loc[df_selected['Working_Year']==2020]
@@ -175,7 +176,7 @@ scatter1.set_ylabel('Seniority',fontdict=font_labels)
 groups = df_2020.groupby('Designation')
 for name, group in groups:
     scatter1.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-scatter1.set_title('2020 Breakdown',weight='bold',fontdict=font)
+scatter1.set_title('2020,2021,2022 Breakdown',weight='bold',fontdict=font)
 scatter1.legend()
 
 scatter2.set_xlabel('Salary',fontdict=font_labels)
@@ -183,7 +184,6 @@ scatter2.set_ylabel('Seniority',fontdict=font_labels)
 groups = df_2021.groupby('Designation')
 for name, group in groups:
     scatter2.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-scatter2.set_title('2021 Breakdown',weight='bold',fontdict=font)
 scatter2.legend()
 
 scatter3.set_xlabel('Salary',fontdict=font_labels)
@@ -191,7 +191,6 @@ scatter3.set_ylabel('Seniority',fontdict=font_labels)
 groups = df_2022.groupby('Designation')
 for name, group in groups:
     scatter3.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-scatter3.set_title('2022 Breakdown',weight='bold',fontdict=font)
 scatter3.legend()
 
 #Getting the data for our piechart
@@ -220,3 +219,30 @@ a(0.3), b(0.5), b(0.4),b(0.3), c(0.6), c(0.5), c(0.4), c(0.3)],
 
 pie_plot.set_title('All years and its composition',weight='bold',fontdict=font)
 pie_plot.legend(loc=(-0.1, 0))
+
+desc.axis([0, 10, 0, 10])
+line = ("In the line figure we can see that DS earn higher than DA and DE in 2022.")
+desc.text(5, 10, line, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+scatter2020 = ("In 2020, senior management was only data scientists and engineers, also Data Scientists earned the most")
+desc.text(5, 9, scatter2020, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+scatter2021 = ("In 2021, most middle management was DS, earning a moderate salary range, however DA and DE jobs earned the most")
+desc.text(5, 8, scatter2021, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+scatter2022 = ("In 2022, most senior management was DS, earning within a higher salary range")
+desc.text(5, 7, scatter2022, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+scatter2022_b = ("however DA and DE jobs primarily held executive management and earned a highsalary.")
+desc.text(5, 6, scatter2022_b, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+pie_intr = ("Even though we observe that DS does not earn the highest salaries, by studying the pie chart")
+desc.text(5, 5, pie_intr, fontsize=10, style='oblique', ha='center', va='top', wrap=True)
+pie_intr_b = ("we can see that DS still remain to be popular in each year and while DA is second and DE is in last")
+desc.text(5, 4, pie_intr_b, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+conc = ("With the above we can see that being a Data Scientist does put you a higher salary range but it is not guranteed")
+desc.text(5, 3, conc, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+conc_b = ("career success. However, it still remains the most popular choice.")
+desc.text(5, 2, conc_b, fontsize=10, style='oblique', ha='center',va='top', wrap=True)
+acr = ("DS - Data Scientis, DA - Data Analyst, DE - Data Engineers")
+desc.text(5, 1, acr, fontsize=10, style='oblique', ha='center', va='top', wrap=True)
+desc.grid(False)
+desc.axis('off')
+
+
+
