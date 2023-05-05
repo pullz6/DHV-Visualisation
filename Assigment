@@ -49,24 +49,9 @@ def pie_data(df_2020,df_2021,df_2022):
     
     df_pie_data = pd.DataFrame(list_temp, columns=['Year', 'Designation','Number'])
     return df_pie_data
-#Setting up the grid 
 
-fig = plt.figure()
-fig3 = plt.figure(constrained_layout=True)
-gs = fig3.add_gridspec(3, 3)
-f3_ax1 = fig3.add_subplot(gs[0, :])
-f3_ax1.set_title('gs[0, :]')
-f3_ax2 = fig3.add_subplot(gs[1, :-1])
-f3_ax2.set_title('gs[1, :-1]')
-f3_ax3 = fig3.add_subplot(gs[1:, -1])
-f3_ax3.set_title('gs[1:, -1]')
-f3_ax4 = fig3.add_subplot(gs[-1, 0])
-f3_ax4.set_title('gs[-1, 0]')
-f3_ax5 = fig3.add_subplot(gs[-1, -2])
-f3_ax5.set_title('gs[-1, -2]')
 
 df_salaries = pd.read_csv('Data_Science_Fields_Salary_Categorization.csv', index_col=0)
-
 
 df_salaries['Salary_In_Rupees'] = df_salaries['Salary_In_Rupees'].str.replace(',', '').astype(float)
 df_salaries['Salary_In_pounds'] = df_salaries['Salary_In_Rupees']/(102)
@@ -107,9 +92,26 @@ df_salaries_num['Employee_Location'] = df_selected['Employee_Location']
 df_salaries_num['Employee_Location'].replace(['US','GB','CA','DE'],[0,1,2,3], inplace=True)
 
 
-#Plotting a graph to see the mean pf the salaries of each of these selected jobs per Large, Medium and Small company 
-ax0=df_select_copy.pivot_table(index='Designation', columns='Company_Size', aggfunc={'Salary_In_pounds':np.mean}).plot.barh(title='Mean Salary for Selected Jobs for Company Size',subplots=True)
+widths = [65, 65, 65, 75,95,65,65,65,65,65]
+heights = [85, 100, 50]
 
+fig3 = plt.figure()
+
+gs = fig3.add_gridspec(3, 10, width_ratios=widths, height_ratios=heights,wspace=0.4, hspace=0.3)
+
+f3_ax1 = fig3.add_subplot(gs[0, :])
+
+plt.figure(figsize = (15, 12))
+grid = plt.GridSpec(3, 4, wspace =0.3, hspace = 0.3)
+plt.subplot(grid[0, :2])
+plt.subplot(grid[0, 2:])
+plt.subplot(grid[1:, :2])
+plt.subplot(grid[1, 2:])
+plt.subplot(grid[2, 2:])
+#Plotting a graph to see the mean pf the salaries of each of these selected jobs per Large, Medium and Small company 
+#df_select_copy.pivot_table(index='Designation', columns='Company_Size', aggfunc={'Salary_In_pounds':np.mean}).plot.barh(title='Mean Salary for Selected Jobs for Company Size',stacked=True,ax=f3_ax1)
+f3_ax1.legend()
+#f3_ax1 = df_bar.plot(kind='barh', stacked=True)
 
 # df_countries = df_selected.loc[df_selected['Employee_Location'].isin(['US','GB','CA','DE'])]
 # df_salaries_num = df_salaries_num[df_salaries_num['Employee_Location'].isin([0,1,2,3])]
@@ -130,20 +132,11 @@ df_2022_num = df_salaries_num.loc[df_salaries_num['Working_Year']==2022]
 mean= df_2022['Salary_In_pounds'].mean()
 df_2022['std_salary'] = df_2022.apply(lambda row : row[10]-mean, axis=1)
 
-plt.figure()
-plt.hist(df_2020['Salary_In_pounds'], 25, alpha=0.5, label='2020',histtype='stepfilled')
-plt.hist(df_2021['Salary_In_pounds'], 25, alpha=0.5, label='2021',histtype='stepfilled')
-plt.hist(df_2022['Salary_In_pounds'], 25, alpha=0.5, label='2022',histtype='stepfilled')
-plt.legend(loc='upper right')
-plt.show()
 
-#Scatter plot 
-plt.figure()
-plt.scatter(df_2020['Salary_In_pounds'],df_2020['Experience'],c=df_2020_num['Designation_num'],marker="d")
-plt.scatter(df_2021['Salary_In_pounds'],df_2021['Experience'],c=df_2021_num['Designation_num'])
-plt.scatter(df_2022['Salary_In_pounds'],df_2022['Experience'],c=df_2022_num['Designation_num'])
-plt.legend(loc='upper right')
-plt.show()
+f3_ax2 = fig3.add_subplot(gs[1, :-2])
+f3_ax2.set_xlabel('Year')
+f3_ax2.set_ylabel('Mean Salary')
+
 
 #Mean over the year 
 df_line_data = pd.DataFrame()
@@ -165,53 +158,53 @@ while i<3:
 df_line_data['2020'] = mean_2020
 df_line_data['2021'] = mean_2021
 df_line_data['2022'] = mean_2022
-print(df_line_data)
+
 df_line_data_t = df_line_data.reset_index().set_index('Designation')
 df_line_data_t = df_line_data_t.drop('index',axis='columns')
 df_line_data_t = df_line_data_t.T
 
-print(df_line_data_t)
-plt.figure(figsize=(5,5))
-plt.plot(df_line_data_t.index,df_line_data_t['Data Analyst'] , '-ok',label ='Data Scientist',linewidth=4)
-plt.plot(df_line_data_t.index,df_line_data_t ['Data Engineer'] , '--o', color='pink',
+
+f3_ax2.plot(df_line_data_t.index,df_line_data_t['Data Analyst'] , '-ok',label ='Data Scientist',linewidth=4)
+f3_ax2.plot(df_line_data_t.index,df_line_data_t ['Data Engineer'] , '--o', color='pink',
          markersize=5, linewidth=4, label ='Data Engineer',
          markerfacecolor='white',
          markeredgecolor='red',
          markeredgewidth=1)
-plt.plot(df_line_data_t.index,df_line_data_t['Data Scientist'], '-p', color='gray', markersize=15, linewidth=4,
+f3_ax2.plot(df_line_data_t.index,df_line_data_t['Data Scientist'], '-p', color='gray', markersize=15, linewidth=4,
          markerfacecolor='white',
          markeredgecolor='gray',
          markeredgewidth=2,label ='Data Scientist')
-plt.legend()
-plt.show()
+f3_ax2.legend()
+
 
 #Scatter plot
-plt.figure()
+f3_ax4 = fig3.add_subplot(gs[-1, 0:2])
+
+f3_ax4.set_xlabel('Salary')
+f3_ax4.set_ylabel('Senority')
+
+
 groups = df_2020.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-plt.xlabel('Salary in Pounds per year')
-plt.ylabel('Experience Level')
-plt.title('Salary for selected positions for 2020')
-plt.legend()
+    f3_ax4.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
 
-plt.figure()
+f3_ax5 = fig3.add_subplot(gs[-1, -7:-5])
+
+f3_ax5.set_xlabel('Salary')
+f3_ax5.set_ylabel('Senority')
+
 groups = df_2021.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-plt.xlabel('Salary in Pounds per year')
-plt.ylabel('Experience Level')
-plt.title('Salary for selected positions for 2021')
-plt.legend()
+    f3_ax5.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
 
-plt.figure()
+f3_ax6 = fig3.add_subplot(gs[-1, -4:-2])
+f3_ax6.set_xlabel('Salary')
+f3_ax6.set_ylabel('Senority')
+
 groups = df_2022.groupby('Designation')
 for name, group in groups:
-    plt.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
-plt.xlabel('Salary in Pounds per year')
-plt.ylabel('Experience Level')
-plt.title('Salary for selected positions for 2022')
-plt.legend()
+    f3_ax6.plot(group['Salary_In_pounds'], group['Experience'], marker='o', linestyle='', markersize=12, label=name,alpha=0.5)
+
 
 #Heating map 
 df_ds = df_2020_num[df_2020_num['Designation_num']==0]
@@ -220,32 +213,34 @@ df_ds=df_ds.drop(["Working_Year"], axis=1)
 df_ds=df_ds.drop(["Designation_num"], axis=1)
 pear_corr=df_ds.corr(method='pearson')
 
+# f3_ax9 = fig3.add_subplot(gs[1, -1])
+# f3_ax9.set_title('gs[0:, -1]')
+# # fig, ax = plt.subplots(figsize=(10,10))
+# im = f3_ax9.imshow(pear_corr, interpolation='nearest', cmap='RdBu')
+# fig3.colorbar(im, orientation='vertical', fraction = 0.05, extend='both')
 
-fig, ax = plt.subplots(figsize=(10,10))
-im = ax.imshow(pear_corr, interpolation='nearest', cmap='RdBu')
-fig.colorbar(im, orientation='vertical', fraction = 0.05, extend='both')
+# # Show all ticks and label them with the dataframe column name
+# f3_ax9.set_xticklabels(df_ds.columns, rotation=65, fontsize=15)
+# f3_ax9.set_yticklabels(df_ds.columns, rotation=0, fontsize=15)
 
-# Show all ticks and label them with the dataframe column name
-ax.set_xticklabels(df_ds.columns, rotation=65, fontsize=15)
-ax.set_yticklabels(df_ds.columns, rotation=0, fontsize=15)
+# # Loop over data dimensions and create text annotations
+# for i in range(len(df_ds.columns)-1):
+#     for j in range(len(df_ds.columns)-1):
+#         text = .text(j, i, round(pear_corr.to_numpy()[i, j], 2),
+#                         ha="center", va="center", color="black")
 
-# Loop over data dimensions and create text annotations
-for i in range(len(df_ds.columns)-1):
-    for j in range(len(df_ds.columns)-1):
-        text = ax.text(j, i, round(pear_corr.to_numpy()[i, j], 2),
-                       ha="center", va="center", color="black")
-
-plt.show()
+# # plt.show()
 
 #Getting the data for our piechart
  
+f3_ax3 = fig3.add_subplot(gs[1:, -2])
 
 df_pie_data = pd.DataFrame() 
 df_pie_data = pie_data(df_2020,df_2021,df_2022)
 outer = df_pie_data.groupby('Year').sum()
 inner = df_pie_data.groupby(['Year','Designation']).sum()
 inner_labels = inner.index.get_level_values(1)
-fig, ax = plt.subplots(figsize=(8,7))
+#fig, ax = plt.subplots(figsize=(8,7))
 size = 0.3
 
 cmap = plt.colormaps["Paired"]
@@ -253,21 +248,18 @@ cmap_inner = plt.colormaps["Pastel2"]
 outer_colors = cmap(np.arange(3)*4)
 inner_colors = cmap_inner([1, 2, 5, 6, 9, 10])
 
-ax.pie(outer.values.flatten(), radius=1,
+f3_ax3.pie(outer.values.flatten(), radius=1,
        labels=outer.index,
        colors=outer_colors,
-       autopct='%1.1f%%',
-       wedgeprops=dict(width=size, edgecolor='w'))
+       wedgeprops=dict(width=size, edgecolor='w'),labeldistance=None)
 
-ax.pie(inner.values.flatten(), radius=1-size, 
+f3_ax3.pie(inner.values.flatten(), radius=1-size, 
        labels = inner_labels,
        colors=inner_colors,
-       wedgeprops=dict(width=size, edgecolor='w'))
+       wedgeprops=dict(width=size, edgecolor='w') ,labeldistance=None)
 
-ax.set(aspect="equal", title='Selected Positions for each year')
-plt.legend(loc=(-0.1, 0))
-plt.show()
 
-    
-    
 
+# ax.set(aspect="equal", title='Selected Positions for each year')
+# plt.legend(loc=(-0.1, 0))
+# plt.show()
